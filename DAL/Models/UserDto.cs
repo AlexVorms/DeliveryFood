@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 using WebApplication2.DAL.Enums;
 
-namespace WebApplication2.DAL.Entities
+namespace WebApplication2.DAL.Models
 {
-    public class UserEntity
+    public class UserDto
     {
-        public Guid Id { get; set; }
         [Required]
         [MinLength(5)]
         public string FullName { get; set; }
@@ -21,10 +19,11 @@ namespace WebApplication2.DAL.Entities
         public string Password { get; set; }
         [Required]
         public Gender Gender { get; set; }
-        public string? Avatar { get; set; }
         [Required]
         public string PhoneNumber { get; set; }
         [Required]
         public string Address { get; set; }
+
+
     }
 }

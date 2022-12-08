@@ -18,10 +18,11 @@ builder.Services.AddSwaggerGen();
 
 
 var connection = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<TestContext>(opt => opt.UseSqlServer(connection));
+builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(connection));
 
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -55,9 +56,9 @@ app.UseAuthorization();
 
 
 //DB init and update
-using var serviceScope = app.Services.CreateScope();
-var dbContext = serviceScope.ServiceProvider.GetRequiredService<TestContext>();
-dbContext?.Database.Migrate();
+//using var serviceScope = app.Services.CreateScope();
+//var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//dbContext?.Database.Migrate();
 
 
 // Configure the HTTP request pipeline.

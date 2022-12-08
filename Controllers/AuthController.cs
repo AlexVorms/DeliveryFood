@@ -14,10 +14,13 @@ namespace WebApplication2.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
+
+
         private readonly List<User> _users = new List<User>
     {
         new User { Login="admin@example.com", Password="Securnost", Role = "admin" }
     };
+     
 
         [HttpPost("login")]
         public IActionResult Token([FromBody] LoginDto model)
