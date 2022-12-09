@@ -26,5 +26,7 @@ namespace WebApplication2.DAL.Entities
         public string PhoneNumber { get; set; }
         [Required]
         public string Address { get; set; }
+        [Required]
+        public bool IsAdmin { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using WebApplication2.DAL.Models;
 using Microsoft.AspNetCore.Http;
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 
 
@@ -19,11 +20,9 @@ namespace WebApplication2.Services
 
     public class LoginService: ILoginService
     {
-        private readonly List<User> _users = new List<User>
-    {
-        new User { Login="admin@example.com", Password="Securnost", Role = "admin" }
-    };
+        
         private readonly ApplicationDbContext _context;
+
         public LoginService(ApplicationDbContext context)
         {
             _context = context;
@@ -53,7 +52,7 @@ namespace WebApplication2.Services
         }
         private ClaimsIdentity GetIdentity(string username, string password)
         {
-            var user = _users.FirstOrDefault(x => x.Login == username && x.Password == password);
+            var user = _context.User.FirstOrDefault(x => x.FullName == username && x.Password == password);
             if (user == null)
             {
                 return null;
@@ -62,20 +61,14 @@ namespace WebApplication2.Services
             // Claims описывают набор базовых данных для авторизованного пользователя
             var claims = new List<Claim>
         {
-            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Login),
-            new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+             new Claim(ClaimsIdentity.DefaultNameClaimType, user.FullName.ToString()),
+            new Claim(ClaimsIdentity.DefaultRoleClaimType, user.IsAdmin ? "Admin" : "User")
         };
 
             //Claims identity и будет являться полезной нагрузкой в JWT токене, которая будет проверяться стандартным атрибутом Authorize
             var claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
             return claimsIdentity;
-        }
-        public class User
-        {
-            public string Login { get; set; }
-            public string Password { get; set; }
-            public string Role { get; set; }
         }
     }
 }

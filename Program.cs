@@ -57,9 +57,9 @@ app.UseAuthorization();
 
 
 //DB init and update
-using var serviceScope = app.Services.CreateScope();
-var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-dbContext?.Database.Migrate();
+//using var serviceScope = app.Services.CreateScope();
+//var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//dbContext?.Database.Migrate();
 
 
 // Configure the HTTP request pipeline.

@@ -62,7 +62,8 @@ namespace WebApplication2.Services
                 Password = model.Password,
                 Gender = model.Gender,
                 PhoneNumber = model.PhoneNumber,
-                Address = model.Address
+                Address = model.Address,
+                IsAdmin = false
             });
             await _context.SaveChangesAsync();
         }
