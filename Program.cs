@@ -23,7 +23,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(conn
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddScoped<ILoginService, LoginService>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         };
     });
-builder.Services.AddScoped<ILoginService, LoginService>();
+
 
 var app = builder.Build();
 

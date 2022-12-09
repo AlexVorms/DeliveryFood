@@ -61,7 +61,7 @@ namespace WebApplication2.Services
             // Claims описывают набор базовых данных для авторизованного пользователя
             var claims = new List<Claim>
         {
-             new Claim(ClaimsIdentity.DefaultNameClaimType, user.FullName.ToString()),
+             new Claim(ClaimsIdentity.DefaultNameClaimType, user.Id.ToString()),
             new Claim(ClaimsIdentity.DefaultRoleClaimType, user.IsAdmin ? "Admin" : "User")
         };
 
