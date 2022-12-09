@@ -8,7 +8,7 @@ namespace WebApplication2.DAL.Entities
     {
         public Guid Id { get; set; }
         [Required]
-        [MinLength(5)]
+        [MinLength(4)]
         public string FullName { get; set; }
         [Required]
         public DateTime BirthDate { get; set; }

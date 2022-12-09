@@ -24,6 +24,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(conn
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -47,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
         };
     });
-
+builder.Services.AddScoped<ILoginService, LoginService>();
 
 var app = builder.Build();
 
@@ -56,9 +57,9 @@ app.UseAuthorization();
 
 
 //DB init and update
-//using var serviceScope = app.Services.CreateScope();
-//var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-//dbContext?.Database.Migrate();
+using var serviceScope = app.Services.CreateScope();
+var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+dbContext?.Database.Migrate();
 
 
 // Configure the HTTP request pipeline.
