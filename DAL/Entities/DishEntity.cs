@@ -18,5 +18,7 @@ namespace WebApplication2.DAL.Entities
         public bool Vegetarian { get; set; }
         [Required]
         public DishCategory Category { get; set; }
+        [Required]
+        public int Rating { get; set;}
     }
 }
