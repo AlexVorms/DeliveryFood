@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication2.DAL.Models;
 
@@ -11,9 +12,11 @@ using WebApplication2.DAL.Models;
 namespace WebApplication2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221210161351_NewAtributeBasket")]
+    partial class NewAtributeBasket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,18 +31,14 @@ namespace WebApplication2.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Amount")
+                    b.Property<int?>("Amount")
+                        .IsRequired()
                         .HasColumnType("int");
-
-                    b.Property<Guid>("DishId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DishId");
 
                     b.HasIndex("UserId");
 
@@ -50,6 +49,9 @@ namespace WebApplication2.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("BasketEntityId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Category")
@@ -67,16 +69,18 @@ namespace WebApplication2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
 
-                    b.Property<double>("Rating")
-                        .HasColumnType("float");
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
 
                     b.Property<bool>("Vegetarian")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BasketEntityId");
 
                     b.ToTable("Dish");
                 });
@@ -91,24 +95,24 @@ namespace WebApplication2.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("BasketId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("DeliveryTime")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("OrderTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float");
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("BasketId");
 
                     b.ToTable("Order");
                 });
@@ -182,32 +186,31 @@ namespace WebApplication2.Migrations
 
             modelBuilder.Entity("WebApplication2.DAL.Entities.BasketEntity", b =>
                 {
-                    b.HasOne("WebApplication2.DAL.Entities.DishEntity", "Dish")
-                        .WithMany()
-                        .HasForeignKey("DishId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("WebApplication2.DAL.Entities.UserEntity", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Dish");
 
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApplication2.DAL.Entities.DishEntity", b =>
+                {
+                    b.HasOne("WebApplication2.DAL.Entities.BasketEntity", null)
+                        .WithMany("Dish")
+                        .HasForeignKey("BasketEntityId");
+                });
+
             modelBuilder.Entity("WebApplication2.DAL.Entities.OrderEntity", b =>
                 {
-                    b.HasOne("WebApplication2.DAL.Entities.UserEntity", "User")
+                    b.HasOne("WebApplication2.DAL.Entities.BasketEntity", "Basket")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("BasketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Basket");
                 });
 
             modelBuilder.Entity("WebApplication2.DAL.Entities.RatingEntity", b =>
@@ -227,6 +230,11 @@ namespace WebApplication2.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApplication2.DAL.Entities.BasketEntity", b =>
+                {
+                    b.Navigation("Dish");
                 });
 #pragma warning restore 612, 618
         }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication2.DAL.Models;
 
@@ -11,9 +12,11 @@ using WebApplication2.DAL.Models;
 namespace WebApplication2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221211055040_ChangingAtribute")]
+    partial class ChangingAtribute
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,10 +76,15 @@ namespace WebApplication2.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("float");
 
+                    b.Property<Guid?>("UserEntityId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("Vegetarian")
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserEntityId");
 
                     b.ToTable("Dish");
                 });
@@ -199,6 +207,13 @@ namespace WebApplication2.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApplication2.DAL.Entities.DishEntity", b =>
+                {
+                    b.HasOne("WebApplication2.DAL.Entities.UserEntity", null)
+                        .WithMany("Basket")
+                        .HasForeignKey("UserEntityId");
+                });
+
             modelBuilder.Entity("WebApplication2.DAL.Entities.OrderEntity", b =>
                 {
                     b.HasOne("WebApplication2.DAL.Entities.UserEntity", "User")
@@ -227,6 +242,11 @@ namespace WebApplication2.Migrations
                     b.Navigation("Dish");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("WebApplication2.DAL.Entities.UserEntity", b =>
+                {
+                    b.Navigation("Basket");
                 });
 #pragma warning restore 612, 618
         }

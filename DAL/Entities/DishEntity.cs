@@ -11,7 +11,7 @@ namespace WebApplication2.DAL.Entities
         [Required]
         public string Description { get; set; }
         [Required]
-        public int Price { get; set; }
+        public double Price { get; set; }
         [Required]
         public string Image { get; set; }
         [Required]
@@ -19,6 +19,6 @@ namespace WebApplication2.DAL.Entities
         [Required]
         public DishCategory Category { get; set; }
         [Required]
-        public int Rating { get; set;}
+        public double Rating { get; set;}
     }
 }

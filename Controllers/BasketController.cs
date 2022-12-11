@@ -1,35 +1,43 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
+using WebApplication2.Services;
 
 namespace WebApplication2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/basket")]
     [ApiController]
     public class BasketController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult <Basket> Get()
+        private IBasketService _basketService;
+        public BasketController(IBasketService basketService)
         {
-            Basket user = new Basket();
-            user.TotalPrice = 224;
-            user.Id ="djddh123";
-            user.Amount =3455;
-            user.Image = "http//:Alex";
-            user.Name = "Alex";
-            user.Price = 1234;
-            return user;
+            _basketService = basketService;
         }
 
-        [HttpPost("{id}")]
-        public string Get(string id)
+        [HttpGet]
+        [Authorize]
+        public string GetBasket()
         {
-            return $"This is GET with id = {id}";
+            return "GET";
         }
-        [HttpDelete("{id}")]
-        public string Delete(string id)
+
+
+        [HttpPost]
+        [Route("dish")]
+        [Authorize]
+        public async Task Post(Guid dishId)
         {
-            return $"This is DELETE = {id}";
+            await _basketService.AddBasket(User.Identity.Name, dishId);
+        }
+
+        [HttpDelete]
+        [Route("dish/{dishId}")]
+        [Authorize]
+        public string Delete(string dishId)
+        {
+            return $"This is DELETE = {dishId}";
         }
     }
 

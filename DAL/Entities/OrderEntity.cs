@@ -13,9 +13,9 @@ namespace WebApplication2.DAL.Entities
         [Required]
         public Status Status { get; set; }
         [Required]
-        public int Price { get; set; }
+        public double Price { get; set; }
         [Required]
         public string Address { get; set; }
-
+        public virtual UserEntity User { get; set; }    
     }
 }

@@ -21,7 +21,6 @@ namespace WebApplication2.Services
             var userEntity = await _context
                 .User
                 .FirstOrDefaultAsync(x => x.Id.ToString() == id);
-
             /*
              * вероятность сюда попасть - почти нулевая, т.к. мы не нашли пользователя по его ID из валидного токена
              * считаю, что это ошибка 401

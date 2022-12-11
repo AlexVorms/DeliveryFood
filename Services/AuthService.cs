@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -53,7 +54,7 @@ namespace WebApplication2.Services
         }
         public async Task RegisterUser(UserDto model)
         {
-            await _context.User.AddAsync(new UserEntity
+            var userModel = new UserEntity
             {
                 Id = Guid.NewGuid(),
                 FullName = model.FullName,
@@ -64,8 +65,10 @@ namespace WebApplication2.Services
                 PhoneNumber = model.PhoneNumber,
                 Address = model.Address,
                 IsAdmin = false
-            });
-            await _context.SaveChangesAsync();
+            };
+            await _context.User.AddAsync(userModel);
+             await _context.SaveChangesAsync();
+
         }
 
     }
