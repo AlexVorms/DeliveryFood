@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebApplication2.DAL.Models;
 using Microsoft.AspNetCore.Authorization;
 using WebApplication2.Services;
+using WebApplication2.DAL.Entities;
 
 namespace WebApplication2.Controllers
 {
@@ -17,19 +18,19 @@ namespace WebApplication2.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        public string GetBasket()
+        //[Authorize]
+        public Task<List<DishBasketDto>> GetBasket()
         {
-            return "GET";
+            return _basketService.GetBasket("11eb4fe2-dce6-475f-8fab-e0199e72cc8e");
         }
 
 
         [HttpPost]
         [Route("dish")]
-        [Authorize]
+       // [Authorize]
         public async Task Post(Guid dishId)
         {
-            await _basketService.AddBasket(User.Identity.Name, dishId);
+            await _basketService.AddBasket("11eb4fe2-dce6-475f-8fab-e0199e72cc8e", dishId);
         }
 
         [HttpDelete]

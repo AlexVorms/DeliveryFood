@@ -20,5 +20,6 @@ namespace WebApplication2.DAL.Entities
         public DishCategory Category { get; set; }
         [Required]
         public double Rating { get; set;}
+       
     }
 }

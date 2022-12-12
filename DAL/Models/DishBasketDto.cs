@@ -1,23 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using WebApplication2.DAL.Entities;
 using WebApplication2.DAL.Enums;
+
 
 namespace WebApplication2.DAL.Models
 {
     public class DishBasketDto
     {
         public Guid Id { get; set; }
-        [Required]
-        public string Name { get; set; }
-
-        [Required]
-        public double Price { get; set; }
-        [Required]
         public int Amount { get; set; }
-       // [Required]
-        //public double TotalPrice = Price*Amount;
-        [Required]
+        public string Name { get; set; }
+        public double Price { get; set; }
+        public double TotalPrice { get; set; }
         public string Image { get; set; }
-        
-        
     }
 }

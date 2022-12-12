@@ -9,8 +9,8 @@ namespace WebApplication2.DAL.Entities
         [Required]
         public int Amount { get; set; }
         [Required]
-        public virtual DishEntity Dish { get; set; }
+        public string DishId { get; set; }
         [Required]
-        public virtual UserEntity User { get; set; }
+        public string UserId { get; set; }
     }
 }
