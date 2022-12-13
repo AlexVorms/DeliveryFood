@@ -51,10 +51,16 @@ namespace WebApplication2.Controllers
         }
 
         [HttpGet("profile")]
-        [Authorize]//Данный Endpoint доступен только для авторизованных пользователей
+       // [Authorize]//Данный Endpoint доступен только для авторизованных пользователей
         public async Task<UserProfileDto> GetProfile()
         {
-            return await _userService.GetProfile(User.Identity.Name);
+            return await _userService.GetProfile("13b5ffe6-ade5-4079-8d00-82bacab1da00");
+        }
+        [HttpPut]
+       // [Authorize]
+        public async Task EditUserProfile(UserEditModel user)
+        {
+            await _userService.EditUserProfile("13b5ffe6-ade5-4079-8d00-82bacab1da00", user);
         }
     }
 

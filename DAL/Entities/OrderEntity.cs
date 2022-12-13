@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using WebApplication2.DAL.Enums;
+using WebApplication2.DAL.Models;
 
 namespace WebApplication2.DAL.Entities
 {
@@ -16,6 +17,8 @@ namespace WebApplication2.DAL.Entities
         public double Price { get; set; }
         [Required]
         public string Address { get; set; }
-        public virtual UserEntity User { get; set; }    
+        [Required]
+        public string UserId { get; set; }
+        public List<DishBasketDto> Basket { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace WebApplication2.Controllers
         //[Authorize]
         public Task<List<DishBasketDto>> GetBasket()
         {
-            return _basketService.GetBasket("11eb4fe2-dce6-475f-8fab-e0199e72cc8e");
+            return _basketService.GetBasket("13b5ffe6-ade5-4079-8d00-82bacab1da00");
         }
 
 
@@ -30,15 +30,15 @@ namespace WebApplication2.Controllers
        // [Authorize]
         public async Task Post(Guid dishId)
         {
-            await _basketService.AddBasket("11eb4fe2-dce6-475f-8fab-e0199e72cc8e", dishId);
+            await _basketService.AddBasket("13b5ffe6-ade5-4079-8d00-82bacab1da00", dishId);
         }
 
         [HttpDelete]
         [Route("dish/{dishId}")]
-        [Authorize]
-        public string Delete(string dishId)
+        //[Authorize]
+        public async Task Delete(string dishId)
         {
-            return $"This is DELETE = {dishId}";
+            await _basketService.DeleteDishInBasket("13b5ffe6-ade5-4079-8d00-82bacab1da00", dishId);
         }
     }
 

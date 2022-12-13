@@ -1,83 +1,47 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebApplication2.DAL.Models;
+using WebApplication2.Services;
 
 namespace WebApplication2.Controllers
 {
-    public class OrderController : Controller
+    [Route("api/order")]
+    [ApiController]
+    public class OrderController : ControllerBase
     {
-        // GET: OrderController
-        public ActionResult Index()
+        private IOrderService _orderService;
+        public OrderController(IOrderService orderService)
         {
-            return View();
+            _orderService = orderService;
+        }
+        [HttpGet("{id}")]
+        // [Authorize]
+        public async Task<OrderInfoDto> GetOrder(string id)
+        {
+            return await _orderService.GetOrder(id);
         }
 
-        // GET: OrderController/Details/5
-        public ActionResult Details(int id)
+        [HttpGet]
+       // [Authorize]
+        public async Task<List<OrderDto>> GetAllOrders()
         {
-            return View();
+            return await _orderService.GetAllOrder("13b5ffe6-ade5-4079-8d00-82bacab1da00");
         }
 
-        // GET: OrderController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: OrderController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+       // [Authorize]
+        public async Task<IActionResult> Post(OrderCreateDto order)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _orderService.AddBasket("13b5ffe6-ade5-4079-8d00-82bacab1da00", order);
+            return Ok("Заказ сформирован");
         }
-
-        // GET: OrderController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: OrderController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        //[Authorize]
+        [Route("{id}/status")]
+        public async Task PostStatus(string id)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: OrderController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: OrderController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _orderService.ChangeOrderStatus(id);
         }
     }
 }

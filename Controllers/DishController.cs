@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace WebApplication2.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/dish")]
     [ApiController]
     public class DishController : ControllerBase
     {
@@ -22,10 +22,17 @@ namespace WebApplication2.Controllers
             _ratingService = ratingService;
         }
         [HttpGet]
-        public Task<IActionResult> GetDish(DishCategory dishCategory, Boolean vegetarian)
+        public async Task<DishPagedListDto> GetDish(DishCategory dishCategory, Boolean vegetarian, int page, Sorting sorting)
         {
-            return null;
+            return await _dishService.GetPage(page, dishCategory, vegetarian,sorting);
         }
+
+        [HttpGet("{id}")]
+        public async Task<DishDto> GetInfoDish(Guid id)
+        {
+            return await _dishService.GetInfoDish(id);
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddDish(DishDto model)
         {
@@ -36,18 +43,28 @@ namespace WebApplication2.Controllers
             try
             {
                 await _dishService.AddDish(model);
-                return Ok(_dishService.GenerateDish());
+                return Ok();
             }
             catch (Exception ex)
             {
                 return StatusCode(500, "Something went wrong during adding a User model");
             }
         }
-        [HttpPost("{id}")]
-        [Authorize]
+        [HttpGet]
+       // [Authorize]
+        [Route("{id}/rating/check")]
+        public async Task<Boolean> ChecksRating(string id)
+        {
+            return await _ratingService.ChecksRating("13b5ffe6-ade5-4079-8d00-82bacab1da00", id);
+        }
+
+        [HttpPost]
+        //[Authorize]
+        [Route("{id}/rating")]
         public async Task GetProfile(Guid id, double rating)
         {
-            await _ratingService.AddRating(User.Identity.Name, id, rating);
+            await _ratingService.AddRating("13b5ffe6-ade5-4079-8d00-82bacab1da00", id, rating);
         }
+
     }
 }

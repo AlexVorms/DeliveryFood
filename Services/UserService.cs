@@ -6,6 +6,7 @@ namespace WebApplication2.Services
     public interface IUserService
     {
         Task<UserProfileDto> GetProfile(string id);
+        Task EditUserProfile(string id, UserEditModel model);
     }
     public class UserService : IUserService
     {
@@ -21,10 +22,7 @@ namespace WebApplication2.Services
             var userEntity = await _context
                 .User
                 .FirstOrDefaultAsync(x => x.Id.ToString() == id);
-            /*
-             * вероятность сюда попасть - почти нулевая, т.к. мы не нашли пользователя по его ID из валидного токена
-             * считаю, что это ошибка 401
-            */
+            
             if (userEntity == null)
             {
                
@@ -37,11 +35,31 @@ namespace WebApplication2.Services
                 Id = userEntity.Id,
                 BirthDate = userEntity.BirthDate,
                 Gender = userEntity.Gender,
-                Address= userEntity.Address,
-                PhoneNumber= userEntity.PhoneNumber
+                Address = userEntity.Address,
+                PhoneNumber = userEntity.PhoneNumber
             };
 
             return userProfile;
+        }
+        public async Task EditUserProfile(string id, UserEditModel model)
+        {
+            var userEntity = await _context
+                .User
+                .FirstOrDefaultAsync(x => x.Id.ToString() == id);
+
+            if (userEntity == null)
+            {
+
+            }
+            else
+            {
+                userEntity.FullName = model.FullName;
+                userEntity.PhoneNumber = model.PhoneNumber;
+                userEntity.BirthDate = model.BirthDate;
+                userEntity.Gender = model.Gender;
+                userEntity.Address = model.Address;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

@@ -10,6 +10,7 @@ namespace WebApplication2.Services
     {
         Task AddBasket(string id, Guid dishId);
         Task<List<DishBasketDto>> GetBasket(string id);
+        Task DeleteDishInBasket(string UserId, string dishId);
     }
     public class BasketService : IBasketService {
         private readonly ApplicationDbContext _context;
@@ -56,12 +57,6 @@ namespace WebApplication2.Services
 
         public async Task<List<DishBasketDto>> GetBasket(string id)
         {
-           
-            var userEntity = await _context
-          .User
-          .Where(x => x.Id.ToString() == id)
-          .FirstOrDefaultAsync();
-
             var basket = await _context
            .Basket
            .Where(x => x.UserId == id)
@@ -105,6 +100,23 @@ namespace WebApplication2.Services
                 Category = dishEntity.Category
             };
             return genreDtos;
+        }
+
+        public async Task DeleteDishInBasket(string UserId, string dishId)
+        {
+            var basketEntity = await _context
+                           .Basket
+                           .Where(x => x.DishId == dishId && x.UserId == UserId)
+                           .FirstOrDefaultAsync();
+            if(basketEntity == null)
+            {
+
+            }
+            else
+            {
+                _context.Basket.Remove(basketEntity);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

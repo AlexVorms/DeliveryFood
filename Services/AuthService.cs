@@ -14,7 +14,6 @@ namespace WebApplication2.Services
     {
         Task RegisterUser(UserDto model);
         UserDto[] GenerateUsers();
-        Task GenerateTMP();
     }
     public class AuthService : IAuthService
     {
@@ -24,21 +23,7 @@ namespace WebApplication2.Services
         {
             _context = context;
         }
-        public async Task GenerateTMP()
-        {
-            var tmpModel = new UserDto
-            {
-                FullName = "alex",
-                Email = "hella@mail.ru",
-                BirthDate = DateTime.Now,
-                Password = "12345",
-                Gender = DAL.Enums.Gender.Male,
-                PhoneNumber = "12345",
-                Address = "random"
-            };
-            await RegisterUser(tmpModel);
-            return;
-        }
+       
         public UserDto[] GenerateUsers()
         {
             return _context.User.Select(x=> new UserDto
