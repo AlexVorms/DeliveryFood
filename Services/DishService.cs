@@ -101,13 +101,6 @@ namespace WebApplication2.Services
             var skipCount =(int)((page - 1) * size);
             var takeCount = (skipCount + size);
 
-            //var dishEntities = await _context
-            //    .Dish
-            //    .Where(x => x.Category == category)
-            //    .OrderByDescending(x => x.Price)
-            //    .Skip(skipCount)
-            //    .Take(takeCount)
-            //    .ToListAsync();
 
             var dishEntities = dishList.Skip(skipCount)
                   .Take(takeCount);

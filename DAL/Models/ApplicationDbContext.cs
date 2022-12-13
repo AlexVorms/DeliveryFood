@@ -11,7 +11,6 @@ namespace WebApplication2.DAL.Models
         public DbSet<BasketEntity> Basket { get; set; }
         public DbSet<UserEntity> User { get; set; }
         public DbSet<OrderEntity> Order { get; set; }
-        public DbSet<DishBasketDto> DishBasketDto { get; set;}
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options){
             Database.EnsureCreated();
         }
