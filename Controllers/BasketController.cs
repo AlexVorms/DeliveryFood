@@ -18,27 +18,74 @@ namespace WebApplication2.Controllers
         }
 
         [HttpGet]
-        //[Authorize]
-        public Task<List<DishBasketDto>> GetBasket()
+        [Authorize]
+        public async Task<IActionResult> GetBasket()
         {
-            return _basketService.GetBasket("13b5ffe6-ade5-4079-8d00-82bacab1da00");
+            try
+            {
+                return Ok( await _basketService.GetBasket(User.Identity.Name));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong during adding a User model");
+            }
         }
 
 
         [HttpPost]
-        [Route("dish")]
-       // [Authorize]
-        public async Task Post(Guid dishId)
+        [Route("dish/{dishId}")]
+       [Authorize]
+        public async Task<IActionResult> Post(Guid dishId)
         {
-            await _basketService.AddBasket("13b5ffe6-ade5-4079-8d00-82bacab1da00", dishId);
+            try
+            { 
+                var result = await _basketService.AddBasket(User.Identity.Name, dishId);
+                if (result)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    var response = new ResponseDto
+                    {
+                        Status = "404",
+                        Message = "Данного блюда нет в меню"
+                    };
+                    return NotFound(response);
+                }
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, "Something went wrong during adding a User model");
+            }
         }
 
         [HttpDelete]
         [Route("dish/{dishId}")]
-        //[Authorize]
-        public async Task Delete(string dishId)
+        [Authorize]
+        public async Task<IActionResult> Delete(string dishId)
         {
-            await _basketService.DeleteDishInBasket("13b5ffe6-ade5-4079-8d00-82bacab1da00", dishId);
+            try
+            {
+                var result = await _basketService.DeleteDishInBasket(User.Identity.Name, dishId);
+                if (result)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    var response = new ResponseDto
+                    {
+                        Status = "404",
+                        Message = "Данного блюда нет в корзине"
+                    };
+                    return NotFound(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong during adding a User model");
+            }
         }
     }
 

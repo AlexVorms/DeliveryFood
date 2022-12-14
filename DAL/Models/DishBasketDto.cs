@@ -9,6 +9,7 @@ namespace WebApplication2.DAL.Models
     public class DishBasketDto
     {
         public Guid Id { get; set; }
+        public string DishId { get; set; }
         public int Amount { get; set; }
         public string Name { get; set; }
         public double Price { get; set; }

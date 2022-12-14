@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using WebApplication2.DAL.Enums;
 using static Azure.Core.HttpHeader;
 using Azure;
+using WebApplication2.Exceptions;
 
 namespace WebApplication2.Services
 {
@@ -32,7 +33,7 @@ namespace WebApplication2.Services
                Price = model.Price,
                Image = model.Image,
                Vegetarian = model.Vegetarian,
-               Rating = model.Rating,
+               Rating = 0,
                Category = model.Category
             });
             await _context.SaveChangesAsync();
@@ -46,8 +47,10 @@ namespace WebApplication2.Services
 
             if (dishEntity == null)
             {
-              
+                return null;
             }
+            else
+            {
                 var dish = new DishDto
                 {
                     Id = dishEntity.Id,
@@ -57,33 +60,13 @@ namespace WebApplication2.Services
                     Name = dishEntity.Name,
                     Vegetarian = dishEntity.Vegetarian,
                     Category = dishEntity.Category,
-                    Rating = await Rating(dishEntity.Id.ToString())
+                    Rating = dishEntity.Rating
                 };
                 return dish;
-        }
-        private async Task<Double> Rating(string id)
-        {
-            var ratingList = await _context
-           .Rating
-           .Where(x => x.Dish.Id.ToString() == id)
-           .ToListAsync();
-
-            double rating = 0;
-            int number = 0;
-            foreach(var i in ratingList)
-            {
-                rating += i.Rating;
-                number += 1;
             }
-            rating = rating / number;
-            return rating;
         }
         public async Task<DishPagedListDto> GetPage(int page, DishCategory category, Boolean vegetarian, Sorting sorting)
         {
-            if (page < 1)
-            {
-
-            }
             List<DishEntity> dishList;
            if((int)sorting <= 2)
             {
@@ -95,8 +78,8 @@ namespace WebApplication2.Services
             }
 
             var dishCountInDb = dishList.Count();
-            var size = 3;
-            var count = (int)(dishCountInDb / size);
+            var size = 5;
+            var count = (int)(dishCountInDb / size)+1;
 
             var skipCount =(int)((page - 1) * size);
             var takeCount = (skipCount + size);

@@ -10,6 +10,7 @@ using WebApplication2.Configurations;
 using WebApplication2.DAL.Models;
 using WebApplication2.Services;
 
+
 namespace WebApplication2.Controllers
 {
     [Route("api/account")]
@@ -29,20 +30,42 @@ namespace WebApplication2.Controllers
         [HttpPost("login")]
         public IActionResult Postlogin(LoginDto model)
         {
-            return _loginService.Token(model);
+            try
+            {
+                var result = _loginService.Token(model);
+                if (result == null)
+                {
+                    var responce = new ResponseDto
+                    {
+                        Status = "Ошибка 400",
+                        Message = "Неправильный email пользователя или пароль"
+                    };
+                    return BadRequest(responce);
+                }
+                else
+                {
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong during adding a User model");
+            }
         }
 
         [HttpPost("register")]
         public async Task<IActionResult> PostRegister(UserDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return StatusCode(401, "User model is incorrect");
-            }
             try
             {
-                await _authService.RegisterUser(model);
-                return Ok(_authService.GenerateUsers());
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Неккоректные данные");
+                }
+                else {
+                    await _authService.RegisterUser(model);
+                    return Ok();
+                }
             }
             catch (Exception ex)
             {
@@ -51,16 +74,39 @@ namespace WebApplication2.Controllers
         }
 
         [HttpGet("profile")]
-       // [Authorize]//Данный Endpoint доступен только для авторизованных пользователей
-        public async Task<UserProfileDto> GetProfile()
+       [Authorize]//Данный Endpoint доступен только для авторизованных пользователей
+        public async Task<IActionResult> GetProfile()
         {
-            return await _userService.GetProfile("13b5ffe6-ade5-4079-8d00-82bacab1da00");
+            try
+            {
+                return Ok(await _userService.GetProfile(User.Identity.Name));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong during adding a User model");
+            }
         }
         [HttpPut]
-       // [Authorize]
-        public async Task EditUserProfile(UserEditModel user)
+        [Authorize]
+        [Route("profile")]
+        public async Task<IActionResult> EditUserProfile(UserEditModel user)
         {
-            await _userService.EditUserProfile("13b5ffe6-ade5-4079-8d00-82bacab1da00", user);
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Неккоректные данные");
+                }
+                else
+                {
+                    await _userService.EditUserProfile(User.Identity.Name, user);
+                    return Ok();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Something went wrong during adding a User model");
+            }
         }
     }
 

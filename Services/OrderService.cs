@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApplication2.DAL.Entities;
 using WebApplication2.DAL.Models;
 
@@ -9,7 +10,7 @@ namespace WebApplication2.Services
         Task AddBasket(string id, OrderCreateDto order);
         Task<List<OrderDto>> GetAllOrder(string id);
         Task<OrderInfoDto> GetOrder(string OrderId);
-        Task ChangeOrderStatus(string OrderId);
+        Task<Int32> ChangeOrderStatus(string OrderId);
     }
     public class OrderService: IOrderService
     {
@@ -68,9 +69,10 @@ namespace WebApplication2.Services
           .Where(x => x.Id.ToString() == i.DishId)
           .FirstOrDefaultAsync();
 
-                var genreDto = new DishBasketDto
+                var basketDto = new DishBasketDto
                 {
                     Id = Guid.NewGuid(),
+                    DishId = dishEntity.Id.ToString(),
                     Name = dishEntity.Name,
                     Amount = i.Amount,
                     Price = dishEntity.Price,
@@ -78,7 +80,7 @@ namespace WebApplication2.Services
                     Image = dishEntity.Image
                 };
 
-                listDtos.Add(genreDto);
+                listDtos.Add(basketDto);
 
                 _context.Basket.Remove(i);
             }
@@ -93,24 +95,31 @@ namespace WebApplication2.Services
            .Where(x => x.UserId == id)
            .ToListAsync();
 
-            var listDtos = new List<OrderDto>();
-
-            foreach (var i in orders)
+            if (orders == null)
             {
-
-                var orderDto = new OrderDto
-                {
-                    Id = i.Id,
-                   DeliveryTime= i.DeliveryTime,
-                   OrderTime= i.OrderTime,
-                   Status= i.Status,
-                   Price = i.Price
-                };
-
-                listDtos.Add(orderDto);
+                return null;
             }
+            else
+            {
+                var listDtos = new List<OrderDto>();
 
-            return listDtos;
+                foreach (var i in orders)
+                {
+
+                    var orderDto = new OrderDto
+                    {
+                        Id = i.Id,
+                        DeliveryTime = i.DeliveryTime,
+                        OrderTime = i.OrderTime,
+                        Status = i.Status,
+                        Price = i.Price
+                    };
+
+                    listDtos.Add(orderDto);
+                }
+
+                return listDtos;
+            }
         }
 
         public async Task<OrderInfoDto> GetOrder(string OrderId)
@@ -121,7 +130,10 @@ namespace WebApplication2.Services
           .Where(x => x.Id.ToString() == OrderId)
           .FirstOrDefaultAsync();
 
-
+            if(order == null)
+            {
+                return null;
+            }
             var orderEntity = new OrderInfoDto
             {
                 Id = order.Id,
@@ -135,21 +147,29 @@ namespace WebApplication2.Services
             return orderEntity;
         }
 
-        public async Task ChangeOrderStatus(string OrderId)
+        public async Task<Int32> ChangeOrderStatus(string OrderId)
         {
             var order = await _context
           .Order
           .Where(x => x.Id.ToString() == OrderId)
           .FirstOrDefaultAsync();
 
-            if (order.Status == DAL.Enums.Status.Delivered)
+            if (order == null)
             {
-
+                return 0;
             }
             else
             {
-                order.Status = DAL.Enums.Status.Delivered;
-                await _context.SaveChangesAsync();
+                if (order.Status == DAL.Enums.Status.Delivered)
+                {
+                    return 1;
+                }
+                else
+                {
+                    order.Status = DAL.Enums.Status.Delivered;
+                    await _context.SaveChangesAsync();
+                    return 3;
+                }
             }
         }
     }

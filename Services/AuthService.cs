@@ -13,7 +13,6 @@ namespace WebApplication2.Services
     public interface IAuthService
     {
         Task RegisterUser(UserDto model);
-        UserDto[] GenerateUsers();
     }
     public class AuthService : IAuthService
     {
@@ -24,19 +23,6 @@ namespace WebApplication2.Services
             _context = context;
         }
        
-        public UserDto[] GenerateUsers()
-        {
-            return _context.User.Select(x=> new UserDto
-            {   
-                FullName = x.FullName,
-                Email = x.Email,
-                BirthDate = x.BirthDate,
-                Password = x.Password,
-                Gender = x.Gender,
-                PhoneNumber = x.PhoneNumber,
-                Address = x.Address
-            }).ToArray();
-        }
         public async Task RegisterUser(UserDto model)
         {
             var userModel = new UserEntity

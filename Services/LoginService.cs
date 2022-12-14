@@ -29,8 +29,11 @@ namespace WebApplication2.Services
         }
         public IActionResult Token(LoginDto model)
         {
-            var identity = GetIdentity(model.UserName, model.Password);
-
+            var identity = GetIdentity(model.Email, model.Password);
+            if (identity == null)
+            {
+                return null;
+            }
             var now = DateTime.UtcNow;
             // создаем JWT-токен
             var jwt = new JwtSecurityToken(
@@ -50,9 +53,9 @@ namespace WebApplication2.Services
 
             return new JsonResult(response);
         }
-        private ClaimsIdentity GetIdentity(string username, string password)
+        private ClaimsIdentity GetIdentity(string email, string password)
         {
-            var user = _context.User.FirstOrDefault(x => x.FullName == username && x.Password == password);
+            var user = _context.User.FirstOrDefault(x => x.Email == email && x.Password == password);
             if (user == null)
             {
                 return null;
