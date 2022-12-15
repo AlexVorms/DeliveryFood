@@ -12,7 +12,7 @@ namespace WebApplication2.Services
 {
     public interface IAuthService
     {
-        Task RegisterUser(UserDto model);
+        Task<Boolean> RegisterUser(UserDto model);
     }
     public class AuthService : IAuthService
     {
@@ -23,23 +23,34 @@ namespace WebApplication2.Services
             _context = context;
         }
        
-        public async Task RegisterUser(UserDto model)
+        public async Task<Boolean> RegisterUser(UserDto model)
         {
-            var userModel = new UserEntity
+            var userEntity = await _context
+           .User
+           .Where(x => x.Email== model.Email && x.Password == model.Password)
+           .FirstOrDefaultAsync();
+            if (userEntity != null)
             {
-                Id = Guid.NewGuid(),
-                FullName = model.FullName,
-                Email = model.Email,
-                BirthDate = model.BirthDate,
-                Password = model.Password,
-                Gender = model.Gender,
-                PhoneNumber = model.PhoneNumber,
-                Address = model.Address,
-                IsAdmin = false
-            };
-            await _context.User.AddAsync(userModel);
-             await _context.SaveChangesAsync();
-
+                return false;
+            }
+            else
+            {
+                var userModel = new UserEntity
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = model.FullName,
+                    Email = model.Email,
+                    BirthDate = model.BirthDate,
+                    Password = model.Password,
+                    Gender = model.Gender,
+                    PhoneNumber = model.PhoneNumber,
+                    Address = model.Address,
+                    IsAdmin = false
+                };
+                await _context.User.AddAsync(userModel);
+                await _context.SaveChangesAsync();
+                return true;
+            }
         }
 
     }

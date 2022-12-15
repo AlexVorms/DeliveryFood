@@ -15,6 +15,7 @@ namespace WebApplication2.DAL.Models
         [Required]
         public string Address { get; set; }
         [Required]
+        [Phone]
         public string PhoneNumber { get; set; }
     }
 }

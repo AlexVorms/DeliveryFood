@@ -58,12 +58,12 @@ namespace WebApplication2.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
+                var result = await _authService.RegisterUser(model);
+                if (!result)
                 {
-                    return BadRequest("Неккоректные данные");
+                    return BadRequest("Данный пользователь уже существует");
                 }
                 else {
-                    await _authService.RegisterUser(model);
                     return Ok();
                 }
             }

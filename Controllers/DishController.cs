@@ -6,7 +6,7 @@ using WebApplication2.DAL.Models;
 using WebApplication2.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using WebApplication2.Exceptions;
+
 
 namespace WebApplication2.Controllers
 {
@@ -48,7 +48,8 @@ namespace WebApplication2.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id}")]
         public async Task<IActionResult> GetInfoDish(Guid id)
         {
             try

@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using WebApplication2.DAL.Enums;
 using static Azure.Core.HttpHeader;
 using Azure;
-using WebApplication2.Exceptions;
+
 
 namespace WebApplication2.Services
 {
@@ -78,7 +78,7 @@ namespace WebApplication2.Services
             }
 
             var dishCountInDb = dishList.Count();
-            var size = 5;
+            var size = 3;
             var count = (int)(dishCountInDb / size)+1;
 
             var skipCount =(int)((page - 1) * size);
