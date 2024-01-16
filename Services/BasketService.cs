@@ -8,7 +8,7 @@ namespace WebApplication2.Services
 {
     public interface IBasketService
     {
-        Task<Boolean> AddBasket(string id, Guid dishId);
+        Task<Boolean> AddDishToBasket(string id, Guid dishId);
         Task<List<BasketDishDto>> GetBasket(string id);
         Task<Boolean> DeleteDishInBasket(string UserId, string dishId);
     }
@@ -18,7 +18,7 @@ namespace WebApplication2.Services
         {
             _context = context;
         }
-        public async Task<Boolean> AddBasket(string id, Guid dishId)
+        public async Task<Boolean> AddDishToBasket(string id, Guid dishId)
         {
             var userEntity = await _context
             .User

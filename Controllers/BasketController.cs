@@ -35,11 +35,11 @@ namespace WebApplication2.Controllers
         [HttpPost]
         [Route("dish/{dishId}")]
        [Authorize]
-        public async Task<IActionResult> Post(Guid dishId)
+        public async Task<IActionResult> AddDishToBasketRequest(Guid dishId)
         {
             try
             { 
-                var result = await _basketService.AddBasket(User.Identity.Name, dishId);
+                var result = await _basketService.AddDishToBasket(User.Identity.Name, dishId);
                 if (result)
                 {
                     return Ok();
