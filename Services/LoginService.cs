@@ -41,7 +41,7 @@ namespace WebApplication2.Services
                 audience: JwtConfigurations.Audience,
                 notBefore: now,
                 claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromTicks(JwtConfigurations.Lifetime)),
+                expires: now.Add(new TimeSpan(0,0,60,0)),
                 signingCredentials: new SigningCredentials(JwtConfigurations.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
