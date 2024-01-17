@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.DAL.Entities;
 using WebApplication2.DAL.Models;
+using WebApplication2.DAL.Repository;
 
 namespace WebApplication2.Services
 {
@@ -15,9 +16,15 @@ namespace WebApplication2.Services
     public class OrderService: IOrderService
     {
         private readonly ApplicationDbContext _context;
-        public OrderService(ApplicationDbContext context, IBasketService basketService)
+        private readonly IOrderRepository _orderRepository;
+        private readonly IBasketRepository _basketRepository;
+        private readonly IDishRepository _dishRepository;
+        public OrderService(ApplicationDbContext context,IOrderRepository orderRepository, IBasketRepository basketRepository, IDishRepository dishRepository)
         {
             _context = context;
+            _orderRepository = orderRepository;
+            _basketRepository = basketRepository;
+            _dishRepository = dishRepository;
         }
         public async Task OrderFormation(string id, OrderCreateDto order)
         {
@@ -33,7 +40,7 @@ namespace WebApplication2.Services
                 {
                     price += i.TotalPrice;
                 }
-                await _context.Order.AddAsync(new OrderEntity
+                var orderEntity = new OrderEntity
                 {
                     Id = Guid.NewGuid(),
                     DeliveryTime = order.DeliveryTime,
@@ -43,26 +50,20 @@ namespace WebApplication2.Services
                     UserId = id,
                     Basket = basket,
                     Price = price
-                });
-                await _context.SaveChangesAsync();
+                };
+                await _orderRepository.AddOrder(orderEntity);
             }
         }
 
         public async Task<List<DishBasketDto>> GetBasket(string id)
         {
-            var basket = await _context
-           .Basket
-           .Where(x => x.UserId == id)
-           .ToListAsync();
+            var basket = await _basketRepository.GetUserBasket(id);
 
             var listDtos = new List<DishBasketDto>();
 
             foreach (var i in basket)
             {
-                var dishEntity = await _context
-          .Dish
-          .Where(x => x.Id.ToString() == i.DishId)
-          .FirstOrDefaultAsync();
+                var dishEntity = await _dishRepository.GetDish(i.DishId);
 
                 var basketDto = new DishBasketDto
                 {
@@ -77,18 +78,14 @@ namespace WebApplication2.Services
 
                 listDtos.Add(basketDto);
 
-                _context.Basket.Remove(i);
+                await _basketRepository.DeleteDishInBasket(i);
             }
-            await _context.SaveChangesAsync();
             return listDtos;
         }
 
         public async Task<List<OrderDto>> GetAllOrder(string id)
         {
-            var orders = await _context
-           .Order
-           .Where(x => x.UserId == id)
-           .ToListAsync();
+            var orders = await _orderRepository.GetOrderList(id);
 
             if (orders == null)
             {
@@ -119,11 +116,7 @@ namespace WebApplication2.Services
 
         public async Task<OrderInfoDto> GetOrder(string OrderId)
         {
-            var order = await _context
-          .Order
-          .Include(x => x.Basket)
-          .Where(x => x.Id.ToString() == OrderId)
-          .FirstOrDefaultAsync();
+            var order = await _orderRepository.GetOrder(OrderId);
 
             if(order == null)
             {
@@ -144,10 +137,7 @@ namespace WebApplication2.Services
 
         public async Task<Int32> ChangeOrderStatus(string OrderId)
         {
-            var order = await _context
-          .Order
-          .Where(x => x.Id.ToString() == OrderId)
-          .FirstOrDefaultAsync();
+            var order = await _orderRepository.GetOrder(OrderId);
 
             if (order == null)
             {
