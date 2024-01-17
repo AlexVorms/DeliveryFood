@@ -15,11 +15,12 @@ namespace WebApplication2.Services
     public class BasketService : IBasketService {
         private readonly ApplicationDbContext _context;
         private readonly IBasketRepository _basketRepository;
-        public BasketService(ApplicationDbContext context, IBasketRepository basketRepository)
+        private readonly IDishRepository _dishRepository;
+        public BasketService(ApplicationDbContext context, IBasketRepository basketRepository, IDishRepository dishRepository)
         {
             _context = context;
             _basketRepository = basketRepository;
-
+            _dishRepository = dishRepository;
         }
         public async Task<Boolean> AddDishToBasket(string id, Guid dishId)
         {
@@ -30,10 +31,7 @@ namespace WebApplication2.Services
 
             var basketEntity = await _basketRepository.GetBasketEntityByDishId(dishId.ToString());
 
-            var dishEntity = await _context
-                .Dish
-                .Where(x => x.Id == dishId)
-                .FirstOrDefaultAsync();
+            var dishEntity = await _dishRepository.GetDish(dishId.ToString());
 
             if (dishEntity == null)
             {
@@ -69,11 +67,8 @@ namespace WebApplication2.Services
 
             foreach (var i in basket)
             {
-                var dishEntity = await _context
-                .Dish
-                .Where(x => x.Id.ToString() == i.DishId)
-                .FirstOrDefaultAsync();
-
+                var dishEntity = await _dishRepository.GetDish(i.DishId);
+                
                 var dish = new BasketDishDto
                 {
                     Id = dishEntity.Id.ToString(),

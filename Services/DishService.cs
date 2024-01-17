@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using WebApplication2.DAL.Enums;
 using static Azure.Core.HttpHeader;
 using Azure;
-
+using WebApplication2.DAL.Repository;
 
 namespace WebApplication2.Services
 {
@@ -17,33 +17,30 @@ namespace WebApplication2.Services
     }
     public class DishService : IDishService
     {
-        private readonly ApplicationDbContext _context;
-        public DishService(ApplicationDbContext context, IConfiguration configuration)
+        private readonly IDishRepository _dishRepository;
+        public DishService(IDishRepository dishRepository)
         {
-            _context = context;
+            _dishRepository = dishRepository;
         }
 
         public async Task AddDish(DishDto model)
         {
-            await _context.Dish.AddAsync(new DishEntity
+            var dish = new DishEntity
             {
                 Id = Guid.NewGuid(),
-               Name = model.Name,
-               Description= model.Description,
-               Price = model.Price,
-               Image = model.Image,
-               Vegetarian = model.Vegetarian,
-               Rating = 0,
-               Category = model.Category
-            });
-            await _context.SaveChangesAsync();
+                Name = model.Name,
+                Description = model.Description,
+                Price = model.Price,
+                Image = model.Image,
+                Vegetarian = model.Vegetarian,
+                Rating = 0,
+                Category = model.Category
+            };
+            await _dishRepository.AddDish(dish);
         }
         public async Task<DishDto> GetInfoDish(Guid id)
         {
-            var dishEntity = await _context
-           .Dish
-           .Where(x => x.Id == id)
-           .FirstOrDefaultAsync();
+            var dishEntity = await _dishRepository.GetDish(id.ToString());
 
             if (dishEntity == null)
             {
@@ -129,30 +126,15 @@ namespace WebApplication2.Services
         {
             if((int)sorting == 3)
             {
-                var Alldish = await _context
-           .Dish
-           .Where(x => x.Category == category && x.Vegetarian == vegetarian)
-           .OrderByDescending(x => x.Name)
-           .ToListAsync();
-                return Alldish;
+                return await _dishRepository.SortingDescByName(category, vegetarian);
             }
             else if((int)sorting == 4)
             {
-                var Alldish = await _context
-           .Dish
-           .Where(x => x.Category == category && x.Vegetarian == vegetarian)
-           .OrderByDescending(x => x.Price)
-           .ToListAsync();
-                return Alldish;
+                return await _dishRepository.SortingDescByPrice(category, vegetarian);
             }
             else if((int)sorting == 5)
             {
-                var Alldish = await _context
-           .Dish
-           .Where(x => x.Category == category && x.Vegetarian == vegetarian)
-           .OrderByDescending(x => x.Rating)
-           .ToListAsync();
-                return Alldish;
+                return await _dishRepository.SortingDescByRating(category, vegetarian);
             }
             return null;
         }
@@ -160,30 +142,15 @@ namespace WebApplication2.Services
         {
             if ((int)sorting == 0)
             {
-                var Alldish = await _context
-           .Dish
-           .Where(x => x.Category == category && x.Vegetarian == vegetarian)
-           .OrderBy(x => x.Name)
-           .ToListAsync();
-                return Alldish;
+                return await _dishRepository.SortingAscByName(category, vegetarian);
             }
             else if ((int)sorting == 1)
             {
-                var Alldish = await _context
-           .Dish
-           .Where(x => x.Category == category && x.Vegetarian == vegetarian)
-           .OrderBy(x => x.Price)
-           .ToListAsync();
-                return Alldish;
+                return await _dishRepository.SortingAscByPrice(category, vegetarian);
             }
             else if ((int)sorting == 2)
             {
-                var Alldish = await _context
-           .Dish
-           .Where(x => x.Category == category && x.Vegetarian == vegetarian)
-           .OrderBy(x => x.Rating)
-           .ToListAsync();
-                return Alldish;
+                return await _dishRepository.SortingAscByRating(category, vegetarian);
             }
             return null;
         }
