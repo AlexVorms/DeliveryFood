@@ -7,7 +7,7 @@ namespace WebApplication2.Services
 {
     public interface IOrderService
     {
-        Task AddBasket(string id, OrderCreateDto order);
+        Task OrderFormation(string id, OrderCreateDto order);
         Task<List<OrderDto>> GetAllOrder(string id);
         Task<OrderInfoDto> GetOrder(string OrderId);
         Task<Int32> ChangeOrderStatus(string OrderId);
@@ -19,7 +19,7 @@ namespace WebApplication2.Services
         {
             _context = context;
         }
-        public async Task AddBasket(string id, OrderCreateDto order)
+        public async Task OrderFormation(string id, OrderCreateDto order)
         {
             var userEntity = await _context
             .User

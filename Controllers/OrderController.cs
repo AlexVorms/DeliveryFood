@@ -90,7 +90,7 @@ namespace WebApplication2.Controllers
                 }
                 else
                 {
-                    await _orderService.AddBasket(User.Identity.Name, order);
+                    await _orderService.OrderFormation(User.Identity.Name, order);
                     return Ok("Заказ сформирован");
                 }
             }
