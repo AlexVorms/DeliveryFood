@@ -1,5 +1,7 @@
 ﻿using WebApplication2.DAL.Models;
 using Microsoft.EntityFrameworkCore;
+using WebApplication2.DAL.Repository;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebApplication2.Services
 {
@@ -10,18 +12,15 @@ namespace WebApplication2.Services
     }
     public class UserService : IUserService
     {
-        private readonly ApplicationDbContext _context;
-
-        public UserService(ApplicationDbContext context)
+        private readonly IUserRepository _userRepository;
+        public UserService(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository= userRepository;
         }
 
         public async Task<UserProfileDto> GetProfile(string id)
         {
-            var userEntity = await _context
-                .User
-                .FirstOrDefaultAsync(x => x.Id.ToString() == id);
+            var userEntity = await _userRepository.GetUser(id);
             
             if (userEntity == null)
             {
@@ -43,9 +42,7 @@ namespace WebApplication2.Services
         }
         public async Task EditUserProfile(string id, UserEditModel model)
         {
-            var userEntity = await _context
-                .User
-                .FirstOrDefaultAsync(x => x.Id.ToString() == id);
+            var userEntity = await _userRepository.GetUser(id);
 
             if (userEntity == null)
             {
@@ -58,7 +55,8 @@ namespace WebApplication2.Services
                 userEntity.BirthDate = model.BirthDate;
                 userEntity.Gender = model.Gender;
                 userEntity.Address = model.Address;
-                await _context.SaveChangesAsync();
+
+               await _userRepository.UpdateUser(userEntity);
             }
         }
     }

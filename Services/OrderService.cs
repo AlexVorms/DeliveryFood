@@ -21,11 +21,6 @@ namespace WebApplication2.Services
         }
         public async Task OrderFormation(string id, OrderCreateDto order)
         {
-            var userEntity = await _context
-            .User
-            .Where(x => x.Id.ToString() == id)
-            .FirstOrDefaultAsync();
-
            var basket = await GetBasket(id);
         
             if (basket == null)

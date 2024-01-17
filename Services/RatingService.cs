@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.DAL.Entities;
 using WebApplication2.DAL.Models;
+using WebApplication2.DAL.Repository;
 
 namespace WebApplication2.Services
 {
@@ -13,9 +14,11 @@ namespace WebApplication2.Services
     public class RatingServise: IRatingService
     {
         private readonly ApplicationDbContext _context;
-        public RatingServise(ApplicationDbContext context)
+        private readonly IUserRepository _userRepository;
+        public RatingServise(ApplicationDbContext context, IUserRepository userRepository)
         {
             _context = context;
+            _userRepository = userRepository;
         }
         private async Task Ratings(string id, DishEntity dish)
         {
@@ -37,10 +40,7 @@ namespace WebApplication2.Services
         }
         public async Task<Int32> AddRating(string IdUser, Guid IdDish, double Rating)
         {
-            var userEntity = await _context
-           .User
-           .Where(x => x.Id.ToString() == IdUser)
-           .FirstOrDefaultAsync();
+            var userEntity = await _userRepository.GetUser(IdUser);
 
             var dishEntity = await _context
            .Dish

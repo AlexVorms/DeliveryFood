@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-
+using WebApplication2.DAL.Repository;
 
 
 namespace WebApplication2.Services
@@ -20,12 +20,11 @@ namespace WebApplication2.Services
 
     public class LoginService: ILoginService
     {
-        
-        private readonly ApplicationDbContext _context;
+        private readonly IUserRepository _userRepository;
 
-        public LoginService(ApplicationDbContext context)
+        public LoginService(IUserRepository userRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
         }
         public IActionResult Token(LoginDto model)
         {
@@ -55,7 +54,7 @@ namespace WebApplication2.Services
         }
         private ClaimsIdentity GetIdentity(string email, string password)
         {
-            var user = _context.User.FirstOrDefault(x => x.Email == email && x.Password == password);
+            var user = _userRepository.GetUserByEmailAndPassword(email, password);
             if (user == null)
             {
                 return null;

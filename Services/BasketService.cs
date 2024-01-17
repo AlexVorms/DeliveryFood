@@ -1,5 +1,4 @@
 ﻿using WebApplication2.DAL.Models;
-using Microsoft.EntityFrameworkCore;
 using WebApplication2.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.DAL.Repository;
@@ -13,21 +12,18 @@ namespace WebApplication2.Services
         Task<Boolean> DeleteDishInBasket(string UserId, string dishId);
     }
     public class BasketService : IBasketService {
-        private readonly ApplicationDbContext _context;
         private readonly IBasketRepository _basketRepository;
         private readonly IDishRepository _dishRepository;
-        public BasketService(ApplicationDbContext context, IBasketRepository basketRepository, IDishRepository dishRepository)
+        private readonly IUserRepository _userRepository;
+        public BasketService(IBasketRepository basketRepository, IDishRepository dishRepository, IUserRepository userRepository)
         {
-            _context = context;
             _basketRepository = basketRepository;
             _dishRepository = dishRepository;
+            _userRepository = userRepository;
         }
         public async Task<Boolean> AddDishToBasket(string id, Guid dishId)
         {
-            var userEntity = await _context
-            .User
-            .Where(x => x.Id.ToString() == id)
-            .FirstOrDefaultAsync();
+            var userEntity = await _userRepository.GetUser(id);
 
             var basketEntity = await _basketRepository.GetBasketEntityByDishId(dishId.ToString());
 
