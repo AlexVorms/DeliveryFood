@@ -78,7 +78,7 @@ namespace WebApplication2.Services
           .Where(x => x.Id.ToString() == i.DishId)
           .FirstOrDefaultAsync();
 
-                var dish = new BasketDishDto
+                var genreDto = new BasketDishDto
                 {
                     Id = dishEntity.Id.ToString(),
                     Name = dishEntity.Name,
@@ -88,14 +88,14 @@ namespace WebApplication2.Services
                     Image = dishEntity.Image
                 };
 
-                listDtos.Add(dish);
+                listDtos.Add(genreDto);
             }
 
                 return listDtos;
         }
         public DishEntity GetDishDtos(DishEntity dishEntity)
         { 
-            var dish = new DishEntity
+            var genreDtos = new DishEntity
             {
                 Id = dishEntity.Id,
                 Name = dishEntity.Name,
@@ -106,7 +106,7 @@ namespace WebApplication2.Services
                 Rating = dishEntity.Rating,
                 Category = dishEntity.Category
             };
-            return dish;
+            return genreDtos;
         }
 
         public async Task<Boolean> DeleteDishInBasket(string UserId, string dishId)
