@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
-
+using WebApplication2.DAL.Repository;
 
 namespace WebApplication2.Services
 {
@@ -14,9 +14,12 @@ namespace WebApplication2.Services
     }
     public class BasketService : IBasketService {
         private readonly ApplicationDbContext _context;
-        public BasketService(ApplicationDbContext context)
+        private readonly IBasketRepository _basketRepository;
+        public BasketService(ApplicationDbContext context, IBasketRepository basketRepository)
         {
             _context = context;
+            _basketRepository = basketRepository;
+
         }
         public async Task<Boolean> AddDishToBasket(string id, Guid dishId)
         {
@@ -25,17 +28,13 @@ namespace WebApplication2.Services
             .Where(x => x.Id.ToString() == id)
             .FirstOrDefaultAsync();
 
-
-            var basketEntity = await _context
-                .Basket
-                .Where(x => x.DishId == dishId.ToString())
-                .FirstOrDefaultAsync();
-
+            var basketEntity = await _basketRepository.GetBasketEntityByDishId(dishId.ToString());
 
             var dishEntity = await _context
                 .Dish
                 .Where(x => x.Id == dishId)
                 .FirstOrDefaultAsync();
+
             if (dishEntity == null)
             {
                 return false;
@@ -44,39 +43,36 @@ namespace WebApplication2.Services
             {
                 if (basketEntity == null)
                 {
-                    await _context.Basket.AddAsync(new BasketEntity
+                    var basket = new BasketEntity
                     {
                         Id = Guid.NewGuid(),
                         Amount = 1,
                         UserId = userEntity.Id.ToString(),
                         DishId = dishEntity.Id.ToString()
-                    });
-                    await _context.SaveChangesAsync();
+                    };
+                    await _basketRepository.SaveBasket(basket);
                 }
                 else
                 {
                     basketEntity.Amount += 1;
+                    await _basketRepository.UpdateBasket(basketEntity);
                 }
-                await _context.SaveChangesAsync();
                 return true;
             }
         }
 
         public async Task<List<BasketDishDto>> GetBasket(string id)
         {
-            var basket = await _context
-           .Basket
-           .Where(x => x.UserId == id)
-           .ToListAsync();
+            var basket = await _basketRepository.GetUserBasket(id);
 
             var listDtos = new List<BasketDishDto>();
 
             foreach (var i in basket)
             {
                 var dishEntity = await _context
-          .Dish
-          .Where(x => x.Id.ToString() == i.DishId)
-          .FirstOrDefaultAsync();
+                .Dish
+                .Where(x => x.Id.ToString() == i.DishId)
+                .FirstOrDefaultAsync();
 
                 var dish = new BasketDishDto
                 {
@@ -111,18 +107,15 @@ namespace WebApplication2.Services
 
         public async Task<Boolean> DeleteDishInBasket(string UserId, string dishId)
         {
-            var basketEntity = await _context
-                           .Basket
-                           .Where(x => x.DishId == dishId && x.UserId == UserId)
-                           .FirstOrDefaultAsync();
+            var basketEntity = await _basketRepository.GetDishInBasket(UserId, dishId);
+
             if(basketEntity == null)
             {
                 return false;
             }
             else
             {
-                _context.Basket.Remove(basketEntity);
-                await _context.SaveChangesAsync();
+                await _basketRepository.DeleteDishInBasket(basketEntity);
                 return true;
             }
         }
