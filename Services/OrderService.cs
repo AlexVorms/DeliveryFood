@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApplication2.DAL.Entities;
 using WebApplication2.DAL.Models;
 using WebApplication2.DAL.Repository;
@@ -15,13 +14,11 @@ namespace WebApplication2.Services
     }
     public class OrderService: IOrderService
     {
-        private readonly ApplicationDbContext _context;
         private readonly IOrderRepository _orderRepository;
         private readonly IBasketRepository _basketRepository;
         private readonly IDishRepository _dishRepository;
         public OrderService(ApplicationDbContext context,IOrderRepository orderRepository, IBasketRepository basketRepository, IDishRepository dishRepository)
         {
-            _context = context;
             _orderRepository = orderRepository;
             _basketRepository = basketRepository;
             _dishRepository = dishRepository;
@@ -151,8 +148,7 @@ namespace WebApplication2.Services
                 }
                 else
                 {
-                    order.Status = DAL.Enums.Status.Delivered;
-                    await _context.SaveChangesAsync();
+                    await _orderRepository.ChangeOrderStatus(order.Id.ToString());
                     return 3;
                 }
             }
