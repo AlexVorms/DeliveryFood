@@ -18,12 +18,10 @@ namespace WebApplication2.Controllers
     public class UsersController : ControllerBase
     {
         private ILoginService _loginService;
-        private IAuthService _authService;
         private IUserService _userService;
-        public UsersController(ILoginService loginService, IAuthService authService, IUserService userService)
+        public UsersController(ILoginService loginService, IUserService userService)
         {
             _loginService = loginService;
-            _authService = authService;
             _userService = userService;
         }
 
@@ -58,7 +56,7 @@ namespace WebApplication2.Controllers
         {
             try
             {
-                var result = await _authService.RegisterUser(model);
+                var result = await _userService.RegisterUser(model);
                 if (!result)
                 {
                     return BadRequest("Данный пользователь уже существует");
